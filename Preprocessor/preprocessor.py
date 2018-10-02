@@ -1,9 +1,6 @@
 #This script preprocesses tweet data by removing punctuation, tokenizing, and removing stop words.
 # Credit https://marcobonzanini.com/2015/03/09/mining-twitter-data-with-python-part-2/
 
-#This script preprocesses tweet data by removing punctuation, tokenizing, and removing stop words.
-# Credit https://marcobonzanini.com/2015/03/09/mining-twitter-data-with-python-part-2/
-
 import nltk
 import re
 import fileinput
