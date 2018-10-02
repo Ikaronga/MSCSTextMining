@@ -35,7 +35,6 @@ stop_words = set(stopwords.words('english')) # remove stop words using the nltk 
 tokens_re = re.compile(r'('+'|'.join(regex_str)+')', re.VERBOSE | re.IGNORECASE) #tokenizing using a regex
 punctuation_re = re.compile('[%s]' % re.escape(string.punctuation))
 
-
  
 def tokenize(s):
     return tokens_re.findall(s)
@@ -43,21 +42,18 @@ def tokenize(s):
 def rmvpunctuation(s):
     return punctuation_re.sub('', s)
 
-
 def preprocess(s , lowercase=True):
     string = rmvpunctuation(s)
     tokens = tokenize(string)
     if lowercase:
         tokens = [token.lower() for token in tokens]
-        filtered_sentence = [word for word in tokens if not word in stop_words] 
-        num_filtered_sentence = [word for word in filtered_sentence if word.isalpha()] #remove number tokens
-        return num_filtered_sentence
+        filtered_tokens = [word for word in tokens if not word in stop_words] 
+        num_filtered_tokens = [word for word in filtered_tokens if word.isalpha()] #remove number tokens
+        url_filtered_tokens = [re.sub(r"http\S+", "", word) for word in num_filtered_tokens] #remove url tokens
+        return url_filtered_tokens
 
 with open("C:/Users/Idah/Documents/Fall18/TxtMining/tv_datatwo.csv", encoding='utf-8') as f:
     reader = csv.reader(f)
     for row in reader:
         print(preprocess("".join(row)))
-
-
-
 
