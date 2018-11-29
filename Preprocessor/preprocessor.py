@@ -7,15 +7,15 @@ import fileinput
 from nltk.corpus import stopwords
 import string
 import csv
-from autocorrect import spell
+import pandas as pd
 
 
-emoticons_str = r"""
+emoticons_str = r""" 
     (?:
         [:=;] # Eyes
         [oO\-]? # Nose (optional)
         [D\)\]\(\]/\\OpP] # Mouth
-    )"""
+    )""" #remove emoticons
  
 regex_str = [
 emoticons_str,
@@ -26,13 +26,15 @@ emoticons_str,
  r'(?:[\w_]+)', # other words
 r'\W*\b\w{1,3}\b', # short words i.e less than 3 letters
  r'(?:\S)' # anything else
-]   
+]   #regular expressions to use for tokenization
 
-stop_words = set(stopwords.words('english')) # remove stop words using the nltk stopwords library
+nltk_stop_words = set(stopwords.words('english')) # stop words from the nltk stopwords library
+cust_stop_words = open("C:/Users/Idah/Documents/Fall18/TxtMining/custom_stopwords.txt", "r").read().split() 
+stop_words = nltk_stop_words.union(cust_stop_words) #combine custom stop words list with the nltk list
+
 tokens_re = re.compile(r'('+'|'.join(regex_str)+')', re.VERBOSE | re.IGNORECASE) #tokenizing using a regex
 punctuation_re = re.compile('[%s]' % re.escape(string.punctuation))
-
-
+thewords = []
  
 def tokenize(s):
     return tokens_re.findall(s)
@@ -40,21 +42,21 @@ def tokenize(s):
 def rmvpunctuation(s):
     return punctuation_re.sub('', s)
 
-
-def preprocess(s , lowercase=True):
-    string = rmvpunctuation(s)
-    tokens = tokenize(string)
+def preprocess(corpus , lowercase=True):
+    corpus_ = rmvpunctuation(corpus)
+    tokens = tokenize(corpus_)
     if lowercase:
-        tokens = [token.lower() for token in tokens]
-        filtered_sentence = [word for word in tokens if not word in stop_words] 
-        num_filtered_sentence = [word for word in filtered_sentence if word.isalpha()] #remove number tokens
-        return num_filtered_sentence
+        tokens = [token.lower() for token in tokens] # to lower case
+        stopw_filtered_tokens = [word for word in tokens if not word in stop_words] 
+        num_filtered_tokens = [word for word in stopw_filtered_tokens if word.isalpha()] #remove number tokens
+        url_filtered_tokens = [re.sub(r"http\S+", "", word) for word in num_filtered_tokens] #remove url tokens
+        return filter(None, url_filtered_tokens) #filter function removes empty strings
 
-with open("C:/Users/Idah/Documents/Fall18/TxtMining/tv_datatwo.csv", encoding='utf-8') as f:
+with open("C:/Users/Idah/Documents/Fall18/TxtMining/ToPreprocess/KaepernickAug17toMar18.csv") as f: #if getting invalid start byte error use encoding='utf-8'
     reader = csv.reader(f)
     for row in reader:
-        print(preprocess("".join(row)))
-
-
+        thewords += preprocess("".join(row))
+            
+pd.DataFrame(thewords).to_csv("C:/Users/Idah/Documents/Fall18/TxtMining/Kaepernick17to18_preprocessed.csv", header=False, index=False)
 
 
