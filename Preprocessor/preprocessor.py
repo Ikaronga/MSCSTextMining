@@ -52,11 +52,11 @@ def preprocess(corpus , lowercase=True):
         url_filtered_tokens = [re.sub(r"http\S+", "", word) for word in num_filtered_tokens] #remove url tokens
         return filter(None, url_filtered_tokens) #filter function removes empty strings
 
-with open("C:/Users/Idah/Documents/Fall18/TxtMining/ToPreprocess/KaepernickAug17toMar18.csv") as f: #if getting invalid start byte error use encoding='utf-8'
+with open("C:/Users/User/Documents/Fall18/TxtMining/ToPreprocess/KaepernickAug17toMar18.csv") as f: #if getting invalid start byte error use encoding='utf-8'
     reader = csv.reader(f)
     for row in reader:
         thewords += preprocess("".join(row))
             
-pd.DataFrame(thewords).to_csv("C:/Users/Idah/Documents/Fall18/TxtMining/Kaepernick17to18_preprocessed.csv", header=False, index=False)
+pd.DataFrame(thewords).to_csv("C:/Users/User/Documents/Fall18/TxtMining/Kaepernick17to18_preprocessed.csv", header=False, index=False)
 
 
